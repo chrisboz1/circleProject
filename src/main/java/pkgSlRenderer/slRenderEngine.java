@@ -16,7 +16,7 @@ public class slRenderEngine {
     private final int TRIANGLES_PER_CIRCLE = 40;
     private final float C_RADIUS = 0.05f;
     private final int MAX_CIRCLES = 100;
-    private final int UPDATE_INTERVAL = 30;
+    private final int UPDATE_INTERVAL = 125;
 
     private float[][] rand_colors;
     private float[][] rand_coords;
@@ -25,18 +25,14 @@ public class slRenderEngine {
     Random my_rand = new Random();
 
     private void updateRandVertices() {
-        //colors
-        final int CR = 0, CG = 1, CB = 2, CA = 3;
 
-        //vertices
-        final int CX = 0, CY = 1, CZ = 2;
 
         rand_colors = new float[MAX_CIRCLES][NUM_RGBA];
         rand_coords = new float[MAX_CIRCLES][NUM_3D_COORDS];
 
         for (int i = 0; i < MAX_CIRCLES; i++) {
-            rand_coords[i][0] = my_rand.nextFloat() * 2.0f-1.0f;
-            rand_coords[i][1] = my_rand.nextFloat() * 2.0f-1.0f;
+            rand_coords[i][0] = (my_rand.nextFloat() * (2.0f - 2.0f * C_RADIUS)) - (1.0f - C_RADIUS);
+            rand_coords[i][1] = (my_rand.nextFloat() * (2.0f - 2.0f * C_RADIUS)) - (1.0f - C_RADIUS);
             rand_coords[i][2] = 0.0f;
 
             rand_colors[i][0] = my_rand.nextFloat();
@@ -77,9 +73,21 @@ public class slRenderEngine {
         final float angleStep = (end_angle - begin_angle)/TRIANGLES_PER_CIRCLE;
         float CC_RED = 0.0f, CC_GREEN = 0.0f, CC_BLUE = 1.0f, CC_ALPHA = 1.0f;
         glClearColor(CC_RED, CC_GREEN, CC_BLUE, CC_ALPHA);
+
+        long lastUpdateTime = System.currentTimeMillis(); // Track the last time circles were updated
+
         while (!my_wm.isGlfwWindowClosed()) {
             glfwPollEvents();
             glClear(GL_COLOR_BUFFER_BIT);
+
+            // Check if the update interval has passed
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastUpdateTime > UPDATE_INTERVAL) {
+                updateRandVertices(); // Update positions of circles
+                lastUpdateTime = currentTime; // Reset the timer
+            }
+
+
             for(int cur_circle = 0; cur_circle < MAX_CIRCLES; cur_circle++) {
                 float[] center = rand_coords[cur_circle];
                 float[] color = rand_colors[cur_circle];

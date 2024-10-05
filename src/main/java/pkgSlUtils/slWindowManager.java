@@ -21,7 +21,10 @@ public class slWindowManager {
 
 
     public int[] getCurrentWindowSize() {
-        return new int[]{};
+        int[] width = new int[1];
+        int[] height = new int[1];
+        glfwGetWindowSize(glfw_win, width, height);
+        return new int[]{width[0], height[0]};
     }
 
     public static slWindowManager get() {
