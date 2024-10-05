@@ -44,7 +44,7 @@ public class slWindowManager {
     }
 
     public boolean isGlfwWindowClosed() {
-        return false;
+        return glfwWindowShouldClose(glfw_win);
     }
 
     public long initGLFWWindow(int width, int height, String label) {
